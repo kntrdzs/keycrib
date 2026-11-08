@@ -43,6 +43,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate, WKScriptMessageHandler
         panel.hidesOnDeactivate = false
         panel.collectionBehavior = [.canJoinAllSpaces, .fullScreenAuxiliary]
         panel.isReleasedWhenClosed = false
+        // Alapméret: 1061×704, ebben 4 csempe fér el egymás mellett.
+        panel.setFrame(NSRect(x: 0, y: 0, width: 1061, height: 704), display: false)
         panel.center()
         panel.setFrameAutosaveName("KeyCribPanel")
 
