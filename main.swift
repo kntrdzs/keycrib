@@ -1,4 +1,4 @@
-// Puska – lebegő karakterpuska, Option + Ő-re előjön / eltűnik.
+// KeyCrib – lebegő karakterpuska, Option + Ő-re előjön / eltűnik.
 // Nem kér Accessibility-engedélyt (a globális gyorsbillentyű Carbon hotkey),
 // és nem kapcsolódik a netre: a puska HTML-je az app bundle-ben van.
 
@@ -37,14 +37,14 @@ final class AppDelegate: NSObject, NSApplicationDelegate, WKScriptMessageHandler
             contentRect: NSRect(x: 0, y: 0, width: 820, height: 680),
             styleMask: [.titled, .closable, .resizable, .utilityWindow, .nonactivatingPanel],
             backing: .buffered, defer: false)
-        panel.title = "Puska"
+        panel.title = "KeyCrib"
         panel.level = .floating
         panel.isFloatingPanel = true
         panel.hidesOnDeactivate = false
         panel.collectionBehavior = [.canJoinAllSpaces, .fullScreenAuxiliary]
         panel.isReleasedWhenClosed = false
         panel.center()
-        panel.setFrameAutosaveName("PuskaPanel")
+        panel.setFrameAutosaveName("KeyCribPanel")
 
         let config = WKWebViewConfiguration()
         // A kattintásos másolás a WebView-ban a natív vágólapra menjen.
@@ -85,10 +85,10 @@ final class AppDelegate: NSObject, NSApplicationDelegate, WKScriptMessageHandler
     func buildMenu() {
         statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
         if let button = statusItem.button {
-            button.image = NSImage(systemSymbolName: "keyboard", accessibilityDescription: "Puska")
+            button.image = NSImage(systemSymbolName: "keyboard", accessibilityDescription: "KeyCrib")
         }
         let menu = NSMenu()
-        let show = NSMenuItem(title: "Puska mutatása / elrejtése", action: #selector(toggle), keyEquivalent: "ő")
+        let show = NSMenuItem(title: "KeyCrib mutatása / elrejtése", action: #selector(toggle), keyEquivalent: "ő")
         show.keyEquivalentModifierMask = [.option]
         menu.addItem(show)
         menu.addItem(.separator())

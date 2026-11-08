@@ -1,4 +1,4 @@
-# Puska
+# KeyCrib
 
 Lebegő karakterpuska macOS-re, magyar billentyűzetkiosztáshoz. Az **Option + Ő** megnyitja és el is tünteti.
 
@@ -17,8 +17,8 @@ A kombinációk a macOS **Hungarian** kiosztásából vannak kiolvasva, nem fejb
 Kell hozzá a Command Line Tools (ha még nincs fent: `xcode-select --install`), és macOS 13 vagy újabb.
 
 ```bash
-git clone https://github.com/kntrdzs/puska.git
-cd puska
+git clone https://github.com/kntrdzs/keycrib.git
+cd keycrib
 ./build.sh
 ```
 
