@@ -1,0 +1,198 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>KeyCrib</title>
+<style>
+/* One column of compact groups; each tile = character + keycaps on a single line. */
+:root {
+  --bg: #f3f5f7; --surface: #ffffff; --fg: #17202a; --muted: #5d6b78; --line: #dde3e9;
+  --accent: #0b6e8a; --key: #eef1f4; --key-edge: #c3ccd5; --warn: #9a5b00;
+  --font-body: -apple-system, BlinkMacSystemFont, "SF Pro Text", system-ui, sans-serif;
+  --font-mono: ui-monospace, "SF Mono", Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #11161b; --surface: #19212a; --fg: #e6ebf0; --muted: #93a1ae; --line: #2a3541;
+    --accent: #5cc3df; --key: #232d38; --key-edge: #3a4856; --warn: #e3a64a; color-scheme: dark;
+  }
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0; background: var(--bg); color: var(--fg); font-family: var(--font-body);
+  font-size: 14px; line-height: 1.45; padding: 16px 16px 28px;
+}
+.wrap { max-width: 1100px; margin: 0 auto; display: flex; flex-direction: column; gap: 18px; }
+header { display: flex; flex-direction: column; gap: 8px; }
+h1 { font-size: 22px; line-height: 1.1; margin: 0; letter-spacing: -0.01em; }
+h1 .layout { color: var(--muted); font-weight: 500; }
+.lead { margin: 0; color: var(--muted); max-width: 80ch; font-size: 13px; }
+.legend { display: flex; flex-wrap: wrap; gap: 6px 16px; color: var(--muted); font-size: 12.5px; align-items: center; }
+.legend span { display: inline-flex; align-items: center; gap: 6px; }
+.tools { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+#q {
+  font: inherit; font-size: 14px; padding: 6px 10px; border-radius: 7px; border: 1px solid var(--line);
+  background: var(--surface); color: var(--fg); width: min(100%, 320px);
+}
+#q:focus-visible, .row:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.hint { color: var(--muted); font-size: 12.5px; }
+section { display: flex; flex-direction: column; gap: 7px; }
+#groups { display: flex; flex-direction: column; gap: 16px; }
+h2 { font-size: 11.5px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--accent); margin: 0; font-weight: 600; }
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(215px, 1fr)); gap: 6px; }
+.row {
+  display: grid; grid-template-columns: 26px 1fr; align-items: center; gap: 8px;
+  background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 5px 9px;
+  cursor: pointer; text-align: left; font: inherit; color: inherit; min-width: 0;
+}
+.row:hover { border-color: var(--accent); }
+.ch { font-family: var(--font-mono); font-size: 19px; font-weight: 600; text-align: center; line-height: 1; }
+.info { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.keys { display: flex; flex-wrap: nowrap; gap: 3px; align-items: center; white-space: nowrap; }
+.name { color: var(--muted); font-size: 11.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.dead { color: var(--warn); }
+kbd {
+  font-family: var(--font-mono); font-size: 11.5px; font-weight: 500; min-width: 20px; text-align: center;
+  padding: 1px 5px; border-radius: 4px; background: var(--key); border: 1px solid var(--key-edge);
+  border-bottom-width: 2px; color: var(--fg); white-space: nowrap;
+}
+.plus { color: var(--muted); font-size: 11px; }
+.row.copied { border-color: var(--accent); }
+.row.copied .name::after { content: " · copied"; color: var(--accent); }
+.short { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 6px; }
+.srow { display: flex; justify-content: space-between; gap: 10px; align-items: center; background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 5px 9px; font-size: 13px; }
+.srow .what { min-width: 0; }
+.srow .win { color: var(--muted); font-size: 11.5px; display: block; }
+.tip { background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px; max-width: 80ch; font-size: 13px; }
+.tip p { margin: 0; }
+.tip p + p { margin-top: 8px; }
+.missing { color: var(--muted); font-size: 12.5px; margin: 0; }
+@media (prefers-reduced-motion: no-preference) { .row { transition: border-color .15s; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>KeyCrib <span class="layout" id="layout"></span></h1>
+    <p class="lead" id="lead">Every special character on your keyboard layout, read live from macOS. Click a tile to copy the character.</p>
+    <div class="legend">
+      <span><kbd>Option</kbd> ≈ AltGr on Windows</span>
+      <span><kbd>Command</kbd> ≈ Ctrl on Windows</span>
+      <span id="hotkey"></span>
+    </div>
+    <div class="tools">
+      <input id="q" type="search" placeholder="Search: * or asterisk" autocomplete="off" aria-label="Search characters">
+      <span class="hint" id="count"></span>
+    </div>
+  </header>
+
+  <div id="groups"></div>
+  <p class="missing" id="missing" hidden></p>
+
+  <section>
+    <h2>Coming from Windows</h2>
+    <div class="short" id="shortcuts"></div>
+  </section>
+
+  <section>
+    <h2>Still can't find it?</h2>
+    <div class="tip">
+      <p><strong>Keyboard Viewer:</strong> System Settings → Keyboard → Text Input → Input Sources: Edit… → turn on “Show Input menu in menu bar”. Then choose “Show Keyboard Viewer” from the input menu. Hold Option to see what each key types.</p>
+      <p><strong>Character Viewer:</strong> <kbd>Control</kbd> <span class="plus">+</span> <kbd>Command</kbd> <span class="plus">+</span> <kbd>Space</kbd> opens every character and emoji, searchable.</p>
+    </div>
+  </section>
+</div>
+
+<script>
+const groups = [
+  { title: "SQL, comparison, math", items: [
+    ["*", "asterisk"], [":", "colon"], [";", "semicolon"], ["<", "less than"], [">", "greater than"],
+    ["=", "equals"], ["≠", "not equal"], ["≤", "less or equal"], ["≥", "greater or equal"],
+    ["!", "exclamation mark"], ["+", "plus"], ["-", "minus / hyphen"], ["/", "slash"], ["%", "percent"],
+    ["_", "underscore"], ["±", "plus-minus"], ["×", "multiply"], ["÷", "divide"],
+  ]},
+  { title: "Brackets", items: [
+    ["(", "open parenthesis"], [")", "close parenthesis"], ["[", "open square bracket"],
+    ["]", "close square bracket"], ["{", "open curly brace"], ["}", "close curly brace"],
+  ]},
+  { title: "Quotes and code", items: [
+    ["'", "apostrophe"], ['"', "double quote"], ["`", "backtick"], ["\\", "backslash"], ["|", "pipe"],
+    ["&", "ampersand"], ["#", "hash"], ["$", "dollar"], ["@", "at sign"], ["^", "caret"], ["~", "tilde"],
+    ["?", "question mark"],
+  ]},
+  { title: "Typography and symbols", items: [
+    ["€", "euro"], ["£", "pound"], ["–", "en dash"], ["—", "em dash"], ["…", "ellipsis"],
+    ["„", "low double quote"], ["“", "left double quote"], ["”", "right double quote"],
+    ["‘", "left single quote"], ["’", "right single quote"], ["«", "left guillemet"], ["»", "right guillemet"],
+    ["§", "section sign"], ["°", "degree"], ["•", "bullet"], ["©", "copyright"], ["®", "registered"], ["™", "trademark"],
+  ]},
+];
+
+const shortcuts = [
+  ["Copy / paste / cut", "Ctrl+C / V / X", [["Command","C"],["Command","V"],["Command","X"]]],
+  ["Undo / redo", "Ctrl+Z / Y", [["Command","Z"],["Shift","Command","Z"]]],
+  ["Start / end of line", "Home / End", [["Command","←"],["Command","→"]]],
+  ["Jump word by word", "Ctrl+← / →", [["Option","←"],["Option","→"]]],
+  ["Delete forward", "Delete", [["fn","⌫"]]],
+  ["Switch apps", "Alt+Tab", [["Command","Tab"]]],
+  ["Close window / quit app", "Ctrl+W / Alt+F4", [["Command","W"],["Command","Q"]]],
+  ["Search (Spotlight)", "Windows key", [["Command","Space"]]],
+  ["Screenshot of an area", "Win+Shift+S", [["Shift","Command","4"]]],
+  ["Excel: edit cell", "F2", [["Control","U"]]],
+];
+
+const data = window.KEYCRIB || null;
+const map = (data && data.map) || {};
+const esc = s => String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const caps = arr => arr.map(k => `<kbd>${esc(k === " " ? "Space" : k)}</kbd>`).join('<span class="plus">+</span>');
+
+if (data) {
+  document.getElementById("layout").textContent = data.layout ? "· " + data.layout : "";
+  document.getElementById("hotkey").innerHTML = `${caps(data.hotkey)} shows / hides this window`;
+} else {
+  document.getElementById("lead").textContent = "Open this page from the KeyCrib app: it reads your keyboard layout from macOS and fills in the key combinations.";
+}
+
+function render(q) {
+  q = (q || "").trim().toLowerCase();
+  let shown = 0;
+  const missing = [];
+  const html = groups.map(g => {
+    const rows = g.items.filter(([c, name]) => {
+      if (!map[c]) { if (data) missing.push(c); return false; }
+      return !q || c === q || c.includes(q) || name.includes(q);
+    });
+    shown += rows.length;
+    if (!rows.length) return "";
+    return `<section><h2>${esc(g.title)}</h2><div class="grid">${rows.map(([c, name]) => {
+      const k = map[c];
+      const note = k.dead ? ` · <span class="dead">then Space</span>` : "";
+      return `<button class="row" type="button" data-c="${esc(c)}" aria-label="Copy ${esc(name)}">
+        <span class="ch">${esc(c)}</span>
+        <span class="info"><span class="keys">${caps([...k.mods, k.key])}</span><span class="name">${esc(name)}${note}</span></span>
+      </button>`;
+    }).join("")}</div></section>`;
+  }).join("");
+  document.getElementById("groups").innerHTML = html || (data ? `<p class="missing">No match. Try the Character Viewer below.</p>` : "");
+  document.getElementById("count").textContent = q ? `${shown} found` : "";
+  const m = document.getElementById("missing");
+  m.hidden = !!q || !missing.length;
+  m.textContent = `Not on this layout: ${missing.join("  ")}  (use the Character Viewer below)`;
+}
+
+document.getElementById("groups").addEventListener("click", e => {
+  const row = e.target.closest(".row"); if (!row) return;
+  const done = () => { row.classList.add("copied"); setTimeout(() => row.classList.remove("copied"), 1200); };
+  try { navigator.clipboard.writeText(row.dataset.c).then(done, () => {}); } catch (_) {}
+});
+document.getElementById("q").addEventListener("input", e => render(e.target.value));
+
+document.getElementById("shortcuts").innerHTML = shortcuts.map(([what, win, combos]) =>
+  `<div class="srow"><span class="what">${esc(what)}<span class="win">Windows: ${esc(win)}</span></span>
+   <span class="keys">${combos.map(caps).join('<span class="plus">/</span>')}</span></div>`).join("");
+
+render("");
+</script>
+</body>
+</html>
