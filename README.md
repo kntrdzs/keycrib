@@ -4,6 +4,8 @@
 
 <p align="center">A floating cheat sheet for the special characters on your Mac keyboard layout.</p>
 
+<p align="center"><img src="assets/screenshot.png" alt="KeyCrib window on the Hungarian layout, showing how to type * : ; < > = and brackets"></p>
+
 ---
 
 Switched to a Mac from Windows, and now can't find `*`, `:`, `<` `>`, `[` `]`, `{` `}`, `|`, `\` or `@`? On non-US layouts they hide behind Option and Shift + Option, in places nobody would guess.
