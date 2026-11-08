@@ -1,0 +1,213 @@
+<title>Mac karakterpuska</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500;600&family=IBM+Plex+Sans:wght@400;500;600&family=Bricolage+Grotesque:opsz,wght@12..96,700&display=swap">
+<style>
+/* Layout: one column of compact groups; each row = big character + keycaps, scannable at a glance */
+:root {
+  --bg: #f3f5f7;
+  --surface: #ffffff;
+  --fg: #17202a;
+  --muted: #5d6b78;
+  --line: #dde3e9;
+  --accent: #0b6e8a;
+  --key: #eef1f4;
+  --key-edge: #c3ccd5;
+  --font-display: "Bricolage Grotesque", "IBM Plex Sans", system-ui, sans-serif;
+  --font-body: "IBM Plex Sans", system-ui, -apple-system, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #11161b; --surface: #19212a; --fg: #e6ebf0; --muted: #93a1ae;
+    --line: #2a3541; --accent: #5cc3df; --key: #232d38; --key-edge: #3a4856; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #11161b; --surface: #19212a; --fg: #e6ebf0; --muted: #93a1ae;
+  --line: #2a3541; --accent: #5cc3df; --key: #232d38; --key-edge: #3a4856; color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body {
+  background: var(--bg); color: var(--fg); font-family: var(--font-body); font-size: 15px; line-height: 1.5;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 16px 28px;
+}
+.wrap { max-width: 980px; margin: 0 auto; display: flex; flex-direction: column; gap: 18px; }
+header { display: flex; flex-direction: column; gap: 8px; }
+h1 { font-family: var(--font-display); font-size: clamp(22px, 4vw, 28px); line-height: 1.05; margin: 0; text-wrap: balance; letter-spacing: -0.01em; }
+.lead { margin: 0; color: var(--muted); max-width: 70ch; font-size: 13.5px; }
+.legend { display: flex; flex-wrap: wrap; gap: 6px 16px; color: var(--muted); font-size: 12.5px; align-items: center; }
+.legend span { display: inline-flex; align-items: center; gap: 6px; }
+.tools { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+#q {
+  font: inherit; font-size: 14px; padding: 6px 10px; border-radius: 7px; border: 1px solid var(--line);
+  background: var(--surface); color: var(--fg); width: min(100%, 340px);
+}
+#q:focus-visible, .row:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.hint { color: var(--muted); font-size: 13px; }
+section { display: flex; flex-direction: column; gap: 7px; }
+#groups { display: flex; flex-direction: column; gap: 16px; }
+h2 { font-size: 11.5px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--accent); margin: 0; font-weight: 600; }
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(215px, 1fr)); gap: 6px; }
+.row {
+  display: grid; grid-template-columns: 26px 1fr; align-items: center; gap: 8px;
+  background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 5px 9px;
+  cursor: pointer; text-align: left; font: inherit; color: inherit; min-width: 0;
+}
+.row:hover { border-color: var(--accent); }
+.ch { font-family: var(--font-mono); font-size: 19px; font-weight: 600; text-align: center; line-height: 1; }
+.info { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.keys { display: flex; flex-wrap: nowrap; gap: 3px; align-items: center; white-space: nowrap; }
+.alt { color: var(--muted); }
+.name { color: var(--muted); font-size: 11.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+kbd {
+  font-family: var(--font-mono); font-size: 11.5px; font-weight: 500; min-width: 20px; text-align: center;
+  padding: 1px 5px; border-radius: 4px; background: var(--key); border: 1px solid var(--key-edge);
+  border-bottom-width: 2px; color: var(--fg); white-space: nowrap;
+}
+.plus { color: var(--muted); font-size: 11px; }
+.row.copied { border-color: var(--accent); }
+.row.copied .name::after { content: " · kimásolva"; color: var(--accent); }
+.short { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 6px; }
+.srow { display: flex; justify-content: space-between; gap: 10px; align-items: center; background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 5px 9px; font-size: 13px; }
+.srow .what { min-width: 0; }
+.srow .win { color: var(--muted); font-size: 11.5px; display: block; }
+.tip { background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px; max-width: 72ch; font-size: 13px; }
+.tip p { margin: 0; }
+.tip p + p { margin-top: 8px; }
+.empty { color: var(--muted); }
+@media (prefers-reduced-motion: no-preference) { .row { transition: border-color .15s; } }
+</style>
+
+<div class="wrap">
+  <header>
+    <h1>Mac karakterpuska</h1>
+    <p class="lead">Magyar Mac-billentyűzetkiosztás, a te gépedről kiolvasva. A gombok úgy szerepelnek, ahogy a billentyűn látod őket. Kattints egy sorra, és kimásolja a karaktert.</p>
+    <div class="legend">
+      <span><kbd>Option</kbd> ≈ Windowson az AltGr</span>
+      <span><kbd>Command</kbd> ≈ Windowson a Ctrl</span>
+    </div>
+    <div class="tools">
+      <input id="q" type="search" placeholder="Keresés: pl. * vagy csillag" autocomplete="off" aria-label="Karakter keresése">
+      <span class="hint" id="count"></span>
+    </div>
+  </header>
+
+  <div id="groups"></div>
+
+  <section>
+    <h2>Windowsról átszokva</h2>
+    <div class="short" id="shortcuts"></div>
+  </section>
+
+  <section>
+    <h2>Ha elakadsz</h2>
+    <div class="tip">
+      <p><strong>Billentyűzet-megjelenítő:</strong> Rendszerbeállítások → Billentyűzet → Beviteli források → kapcsold be a „Beviteli menü megjelenítése a menüsoron” opciót. Utána a menüsorban a zászló ikonnál válaszd a „Billentyűzet-megjelenítő megjelenítése” pontot. Ha lenyomod az Optiont, a képernyőn látod, melyik gomb mit ír.</p>
+      <p><strong>Karakternézegető:</strong> <kbd>Control</kbd> <span class="plus">+</span> <kbd>Command</kbd> <span class="plus">+</span> <kbd>Szóköz</kbd> megnyitja az összes karaktert és emojit, kereshetően.</p>
+    </div>
+  </section>
+</div>
+
+<script>
+const O = "⌥", S = "⇧";
+const groups = [
+  { title: "SQL, összehasonlítás, műveletek", items: [
+    ["*", "csillag", [S, O, ","]],
+    [":", "kettőspont", [S, "."]],
+    [";", "pontosvessző", [O, "."]],
+    ["<", "kisebb", [S, O, "Y"]],
+    [">", "nagyobb", [S, O, "X"]],
+    ["=", "egyenlő", [S, "7"]],
+    ["≠", "nem egyenlő", [O, "Ó"]],
+    ["!", "felkiáltójel", [S, "4"]],
+    ["+", "plusz", [S, "3"]],
+    ["-", "mínusz", ["-"]],
+    ["/", "per", [S, "6"]],
+    ["%", "százalék", [S, "5"]],
+    ["_", "alulvonás", [S, "-"]],
+  ]},
+  { title: "Zárójelek", items: [
+    ["(", "kerek nyitó", [S, "8"]],
+    [")", "kerek záró", [S, "9"]],
+    ["[", "szögletes nyitó", [O, "8"]],
+    ["]", "szögletes záró", [O, "9"]],
+    ["{", "kapcsos nyitó", [O, "7"]],
+    ["}", "kapcsos záró", [O, "Ö"], "vagy Shift + Option + 9"],
+  ]},
+  { title: "Idézőjelek, programozás", items: [
+    ["'", "aposztróf", [S, "1"]],
+    ['"', "idézőjel", [S, "2"]],
+    ["`", "backtick", [O, "Ű"]],
+    ["\\", "backslash", [O, "Ü"]],
+    ["|", "pipe", [O, "Í"]],
+    ["&", "és-jel", [O, "1"]],
+    ["#", "kettőskereszt", [S, O, "3"]],
+    ["$", "dollár", [O, "4"]],
+    ["@", "kukac", [O, "Q"]],
+    ["^", "kalap", [O, "Á"]],
+    ["~", "tilde", [O, "Ú"]],
+    ["?", "kérdőjel", [S, ","]],
+  ]},
+  { title: "Egyéb hasznos", items: [
+    ["€", "euró", [O, "E"]],
+    ["–", "nagykötőjel", [O, "-"]],
+    ["…", "három pont", [O, "É"]],
+    ["„", "magyar nyitó idézőjel", [O, "V"]],
+    ["”", "magyar záró idézőjel", [O, "B"]],
+    ["§", "paragrafus", [S, "0"]],
+    ["°", "fok", [S, O, "Ö"]],
+    ["•", "felsorolásjel", [O, "L"]],
+  ]},
+];
+
+const shortcuts = [
+  ["Másolás / beillesztés / kivágás", "Ctrl+C / V / X", [["⌘","C"],["⌘","V"],["⌘","X"]]],
+  ["Visszavonás / újra", "Ctrl+Z / Y", [["⌘","Z"],["⇧","⌘","Z"]]],
+  ["Sor eleje / vége", "Home / End", [["⌘","←"],["⌘","→"]]],
+  ["Ugrás szavanként", "Ctrl+← / →", [["⌥","←"],["⌥","→"]]],
+  ["Törlés előre", "Delete", [["fn","⌫"]]],
+  ["Appváltás", "Alt+Tab", [["⌘","Tab"]]],
+  ["Ablak bezárása / kilépés", "Ctrl+W / Alt+F4", [["⌘","W"],["⌘","Q"]]],
+  ["Keresés (Spotlight)", "Win gomb", [["⌘","Szóköz"]]],
+  ["Képernyőkép kijelölt részről", "Win+Shift+S", [["⇧","⌘","4"]]],
+  ["Excel: cella szerkesztése", "F2", [["⌃","U"]]],
+];
+
+const esc = s => s.replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const NAMES = { "⌥": "Option", "⇧": "Shift", "⌘": "Command", "⌃": "Control" };
+const caps = arr => arr.map(k => `<kbd>${esc(NAMES[k] || k)}</kbd>`).join('<span class="plus">+</span>');
+
+function render(q) {
+  q = (q || "").trim().toLowerCase();
+  let n = 0;
+  const html = groups.map(g => {
+    const rows = g.items.filter(([c, name]) => !q || c === q || c.includes(q) || name.toLowerCase().includes(q));
+    n += rows.length;
+    if (!rows.length) return "";
+    return `<section><h2>${esc(g.title)}</h2><div class="grid">${rows.map(([c, name, keys, alt]) =>
+      `<button class="row" type="button" data-c="${esc(c)}" aria-label="${esc(name)} másolása">
+        <span class="ch">${esc(c)}</span>
+        <span class="info"><span class="keys">${caps(keys)}</span><span class="name">${esc(name)}${alt ? `<span class="alt"> · ${esc(alt)}</span>` : ""}</span></span>
+      </button>`).join("")}</div></section>`;
+  }).join("");
+  document.getElementById("groups").innerHTML = html || `<p class="empty">Nincs ilyen karakter a listán. Próbáld a Karakternézegetőt lent.</p>`;
+  document.getElementById("count").textContent = q ? `${n} találat` : "";
+}
+
+document.getElementById("groups").addEventListener("click", e => {
+  const row = e.target.closest(".row"); if (!row) return;
+  const c = row.dataset.c;
+  const done = () => { row.classList.add("copied"); setTimeout(() => row.classList.remove("copied"), 1200); };
+  try { navigator.clipboard.writeText(c).then(done, () => {}); } catch (_) {}
+});
+document.getElementById("q").addEventListener("input", e => render(e.target.value));
+
+document.getElementById("shortcuts").innerHTML = shortcuts.map(([what, win, combos]) =>
+  `<div class="srow"><span class="what">${esc(what)}<span class="win">Windows: ${esc(win)}</span></span>
+   <span class="keys">${combos.map(caps).join('<span class="plus">/</span>')}</span></div>`).join("");
+
+render("");
+</script>
